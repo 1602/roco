@@ -8,13 +8,18 @@
     "url": "git@github.com:1602/roco.git"
   },
   "main": "lib/rockout.js",
+  "bin": {
+      "roco": "bin/roco"
+  },
   "scripts": {
     "test": "nodeunit test/*_test.js"
   },
   "engines": {
     "node": ">= 0.4.0"
   },
-  "dependencies": {},
+  "dependencies": {
+    "coffee-script": "*"
+  },
   "devDependencies": {
     "nodeunit": "*"
   },

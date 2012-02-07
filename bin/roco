@@ -1,0 +1,6 @@
+#!/usr/bin/env node
+
+var roco = require('../lib/rockout');
+roco.init();
+roco.perform(process.argv.slice(2));
+

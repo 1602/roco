@@ -4,23 +4,31 @@ ensure 'application', ->
     abort 'Please specify application name, set "application", "foo"'
 ensure 'repository', ->
     abort 'Please specify repository url, set "repository", "/home/git/myrepo.git"'
+ensure 'hosts', ->
+    abort 'Specify ssh hosts to run commands on, set "hosts", ["example.com", "git@example.com"]'
 
-ensure 'scm', 'git'
-ensure 'branch', 'master'
-ensure 'deployTo', -> "/var/www/apps/#{roco.application}"
-ensure 'releaseName', Date.now().toString()
-ensure 'releasesDir', 'releases'
-ensure 'sharedDir',   'shared'
-ensure 'currentDir',  'current'
+ensure 'scm',          'git'
+ensure 'branch',       'master'
+ensure 'deployTo', ->  "/var/www/apps/#{roco.application}"
+ensure 'releaseName',  Date.now()
+ensure 'releasesDir',  'releases'
+ensure 'sharedDir',    'shared'
+ensure 'currentDir',   'current'
 ensure 'releasesPath', -> path.resolve(roco.deployTo, roco.releasesDir)
 ensure 'sharedPath',   -> path.resolve(roco.deployTo, roco.sharedDir)
 ensure 'currentPath',  -> path.resolve(roco.deployTo, roco.currentDir)
-ensure 'releasePath',  -> path.resolve(roco.releasesPath, roco.releaseName)
+ensure 'releasePath',  -> path.resolve(roco.releasesPath, ''+roco.releaseName)
 ensure 'env', 'production'
 ensure 'nodeEntry', 'server.js'
 ensure 'appPort', 3001
 
+set 'hosts', ['node-js.ru', 'railwayjs.com']
+
 namespace 'deploy', ->
+
+    task "test", ->
+        run 'ps aux | grep node', (data) ->
+            console.log data
 
     desc """
         Update code and restart server
@@ -31,7 +39,7 @@ namespace 'deploy', ->
         Pull latest changes from SCM and symlink latest release
         as current release
     """
-    task 'update',  (done) -> sequence 'updateCode', 'symlink', done
+    task 'update', (done) -> sequence 'updateCode', 'symlink', done
 
     task 'updateCode', (done) ->
         localRun "git ls-remote #{roco.repository} #{roco.branch}", (x) ->

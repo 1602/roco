@@ -18,11 +18,11 @@ ensure 'releasesPath', -> path.resolve(roco.deployTo, roco.releasesDir)
 ensure 'sharedPath',   -> path.resolve(roco.deployTo, roco.sharedDir)
 ensure 'currentPath',  -> path.resolve(roco.deployTo, roco.currentDir)
 ensure 'releasePath',  -> path.resolve(roco.releasesPath, ''+roco.releaseName)
+ensure 'previousReleasePath', -> path.resolve(roco.releasesPath, ''+roco.previousRelease)
+ensure 'latestReleasePath', -> path.resolve(roco.releasesPath, ''+roco.latestRelease)
 ensure 'env', 'production'
 ensure 'nodeEntry', 'server.js'
 ensure 'appPort', 3001
-
-set 'hosts', ['node-js.ru', 'railwayjs.com']
 
 namespace 'deploy', ->
 
@@ -39,7 +39,15 @@ namespace 'deploy', ->
         Pull latest changes from SCM and symlink latest release
         as current release
     """
-    task 'update', (done) -> sequence 'updateCode', 'symlink', done
+    task 'update', (done) -> sequence 'prepare', 'updateCode', 'symlink', done
+
+    task 'prepare', (done) ->
+        run "ls -x #{roco.releasesPath}", (res) ->
+            rs = res[0].out.replace(/^\s+|\s+$/g, '').split(/\s+/).sort()
+            set 'releases', rs
+            set 'latestRelease', rs[rs.length - 1]
+            set 'previousRelease', rs[rs.length - 2]
+            done()
 
     task 'updateCode', (done) ->
         localRun "git ls-remote #{roco.repository} #{roco.branch}", (x) ->
@@ -77,6 +85,16 @@ namespace 'deploy', ->
 
     task 'stop', (done) ->
         run "sudo stop #{roco.application}", done
+
+    task 'rollback', (done) ->
+        sequence 'prepare', 'rollback:code', 'restart', 'rollback:cleanup', done
+
+    task 'rollback:code', (done) ->
+        if roco.previousRelease
+            run "rm #{roco.currentPath}; ln -s #{roco.previousReleasePath} #{roco.currentPath}", done
+
+    task 'rollback:cleanup', (done) ->
+        run "if [ `readlink #{roco.currentPath}` != #{roco.latestReleasePath} ]; then rm -rf #{roco.latestReleasePath}; fi", done
 
     task 'setup', (done) ->
         dirs = [roco.deployTo, roco.releasesPath, roco.sharedPath, roco.sharedPath + '/log'].join(' ')

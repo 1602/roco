@@ -14,6 +14,8 @@ Useful for deployment, monitoring and other tasks.
 
 ## Configuring
 
+Use one of three ways for configuring your app: package.json, roco.coffee or ENV vars
+
 ### package.json
 
 roco looking for package.json in working directory and set these variables:

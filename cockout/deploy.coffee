@@ -7,9 +7,10 @@ ensure 'repository', ->
 ensure 'hosts', ->
     abort 'Specify ssh hosts to run commands on, set "hosts", ["example.com", "git@example.com"]'
 
+ensure 'env',          'production'
 ensure 'scm',          'git'
 ensure 'branch',       'master'
-ensure 'deployTo', ->  "/var/www/apps/#{roco.application}"
+ensure 'deployTo', ->  "/var/www/apps/#{roco.application}/#{roco.env}"
 ensure 'releaseName',  Date.now()
 ensure 'releasesDir',  'releases'
 ensure 'sharedDir',    'shared'
@@ -108,15 +109,27 @@ namespace 'deploy', ->
         sequence 'setup', 'writeUpstartScript', done
 
     task 'writeUpstartScript', (done) ->
+        maybeEnv = ''
+        maybeEnv = "env NODE_ENV=\"#{roco.env}\"" if roco.env
+
+        maybePort = ''
+        maybePort = "env PORT=#{roco.appPort}" if roco.appPort
+
         ups = """
           description "#{roco.application}"
 
           start on startup
           stop on shutdown
 
+          #{maybePort}
+          #{maybeEnv}
+
           script
+              export PORT
+              export NODE_ENV
+
               cd #{roco.currentPath}
-              exec sudo sh -c "NODE_ENV=#{roco.env} PORT=#{roco.appPort} /usr/local/bin/node #{roco.currentPath}/#{roco.nodeEntry} >> #{roco.sharedPath}/log/#{roco.env}.log 2>&1"
+              /usr/local/bin/node #{roco.currentPath}/#{roco.nodeEntry}
           end script
           respawn
           """

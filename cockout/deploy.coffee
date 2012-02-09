@@ -24,6 +24,11 @@ ensure 'latestReleasePath', -> path.resolve(roco.releasesPath, ''+roco.latestRel
 ensure 'env', 'production'
 ensure 'nodeEntry', 'server.js'
 ensure 'appPort', 3001
+ensure 'job', ->
+    if roco.env == 'production'
+        roco.application
+    else
+        roco.application '-' + roco.env
 
 namespace 'deploy', ->
 
@@ -79,13 +84,13 @@ namespace 'deploy', ->
           """, done
 
     task 'restart', (done) ->
-        run "sudo restart #{roco.application} || sudo start #{roco.application}", done
+        run "sudo restart #{roco.job} || sudo start #{roco.job}", done
 
     task 'start', (done) ->
-        run "sudo start #{roco.application}", done
+        run "sudo start #{roco.job}", done
 
     task 'stop', (done) ->
-        run "sudo stop #{roco.application}", done
+        run "sudo stop #{roco.job}", done
 
     task 'rollback', (done) ->
         sequence 'prepare', 'rollback:code', 'restart', 'rollback:cleanup', done
@@ -133,5 +138,11 @@ namespace 'deploy', ->
           end script
           respawn
           """
-        run "sudo echo '#{ups}' > /tmp/upstart.tmp && sudo mv /tmp/upstart.tmp /etc/init/#{roco.application}.conf", done
+
+        if roco.env == 'production'
+            file = roco.application
+        else
+            file = "#{roco.application}-#{roco.env}"
+        
+        run "sudo echo '#{ups}' > /tmp/upstart.tmp && sudo mv /tmp/upstart.tmp /etc/init/#{file}.conf", done
 

@@ -70,6 +70,10 @@ namespace 'i', ->
 
     task 'all', (done) ->
         sequence 'top', 'free', 'disk', 'node', done
+
+    # display last 100 lines of application log
+    task 'log', ->
+        run "tail -n 100 #{roco.sharedPath}/log/#{roco.env}.log"
 ```
 
 ## Deploy

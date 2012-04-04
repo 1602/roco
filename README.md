@@ -87,8 +87,8 @@ feel free to rewrite start/stop/restart scripts:
 
 ```coffee-script
 namespace 'deploy', ->
-    task 'start', (done) -> run "cd #{roco.application}; forever start server.js"
-    task 'stop', (done) -> run "cd #{roco.application}; forever stop"
+    task 'start', (done) -> run "cd #{roco.currentPath}; forever start server.js"
+    task 'stop', (done) -> run "cd #{roco.currentPath}; forever stop"
 ```
 
 ## License

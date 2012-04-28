@@ -23,7 +23,7 @@ ensure 'previousReleasePath', -> path.resolve(roco.releasesPath, ''+roco.previou
 ensure 'latestReleasePath', -> path.resolve(roco.releasesPath, ''+roco.latestRelease)
 ensure 'env', 'production'
 ensure 'nodeEntry', 'server.js'
-ensure 'appPort', 3001
+ensure 'appPort', 3003
 ensure 'job', ->
     if roco.env == 'production'
         roco.application

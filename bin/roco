@@ -1,6 +1,23 @@
 #!/usr/bin/env node
+var optimist = require('optimist');
+var argv = optimist
+    .usage('Usage: roco [-tT] [env] command')
+    .describe('t', 'list avaliable commands')
+    .describe('T', 'list avaliable commands with descriptions')
+    .argv;
+
+console.log(argv);
 
 var roco = require('../lib/rockout');
 roco.init();
-roco.perform(process.argv.slice(2));
+
+if (argv.T) {
+    roco.list(argv.T);
+} else if (argv.t) {
+    roco.list(argv.t, true);
+} else if (argv._.length) {
+    roco.perform(argv._);
+} else {
+    optimist.showHelp();
+}
 

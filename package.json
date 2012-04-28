@@ -2,7 +2,7 @@
   "author": "Anatoliy Chakkaev <rpm1602 at gmail dot com>",
   "name": "roco",
   "description": "Deploy app to remote server via ssh",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "repository": {
     "type": "git",
     "url": "git@github.com:1602/roco.git"
@@ -18,7 +18,8 @@
     "node": ">= 0.4.0"
   },
   "dependencies": {
-    "coffee-script": "*"
+    "coffee-script": "*",
+    "optimist": "*"
   },
   "devDependencies": {
     "nodeunit": "*"

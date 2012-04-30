@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 var optimist = require('optimist');
 var argv = optimist
-    .usage('Usage: roco [-tT] [env] command')
-    .describe('t', 'list avaliable commands')
-    .describe('T', 'list avaliable commands with descriptions')
+    .usage('Usage: roco [-tT] [env] [command]')
+    .describe('t', 'list avaliable tasks')
+    .describe('T', 'list avaliable tasks with descriptions')
     .argv;
 
 console.log(argv);

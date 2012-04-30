@@ -23,7 +23,7 @@ ensure 'previousReleasePath', -> path.resolve(roco.releasesPath, ''+roco.previou
 ensure 'latestReleasePath', -> path.resolve(roco.releasesPath, ''+roco.latestRelease)
 ensure 'env', 'production'
 ensure 'nodeEntry', 'server.js'
-ensure 'appPort', 3003
+ensure 'appPort', process.env.APP_PORT || process.env.PORT || 3003
 ensure 'job', ->
     if roco.env == 'production'
         roco.application
@@ -75,6 +75,9 @@ namespace 'deploy', ->
                         cp -RPp #{roco.sharedPath}/cached-copy #{roco.releasePath}
                         """, done
 
+    desc """
+        Remove current symlink, symlink current release and log file
+    """
     task 'symlink', (done) ->
         run """
           rm -f #{roco.currentPath};
@@ -83,15 +86,24 @@ namespace 'deploy', ->
           true
           """, done
 
+    desc """
+        Restart upstart job, or start if job is not running
+    """
     task 'restart', (done) ->
         run "sudo restart #{roco.job} || sudo start #{roco.job}", done
 
+    desc "Start upstart job"
     task 'start', (done) ->
         run "sudo start #{roco.job}", done
 
+    desc "Stop upstart job"
     task 'stop', (done) ->
         run "sudo stop #{roco.job}", done
 
+    desc """
+        Rollback current release. Removes current synlink, symlink previous,
+        restart process and remove code.
+    """
     task 'rollback', (done) ->
         sequence 'prepare', 'rollback:code', 'restart', 'rollback:cleanup', done
 

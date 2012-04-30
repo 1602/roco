@@ -22,7 +22,8 @@
     "optimist": "*"
   },
   "devDependencies": {
-    "nodeunit": "*"
+    "nodeunit": "*",
+    "semicov": "*"
   },
   "optionalDependencies": {}
 }

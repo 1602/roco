@@ -19,5 +19,9 @@ if (argv.T) {
     roco.perform(argv._);
 } else {
     optimist.showHelp();
+    console.log('Environment variables:\n');
+    console.log('APP    - name of app');
+    console.log('HOSTS  - comma separated list of hosts to run remote commands');
+    console.log('PORT   - application port (for deploy setup)');
 }
 

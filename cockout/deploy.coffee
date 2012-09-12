@@ -62,7 +62,7 @@ namespace 'deploy', ->
                 if [ -d #{roco.sharedPath}/cached-copy ];
                   then cd #{roco.sharedPath}/cached-copy &&
                   git fetch -q origin && git fetch --tags -q origin &&
-                  git reset -q --hard #{head} && git clean -q -d -x -f;
+                  git reset -q --hard #{head} && git clean -q -d -f;
                 else
                   git clone -q #{roco.repository} #{roco.sharedPath}/cached-copy &&
                   cd #{roco.sharedPath}/cached-copy &&

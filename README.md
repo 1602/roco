@@ -91,6 +91,31 @@ namespace 'deploy', ->
     task 'stop', (done) -> run "cd #{roco.currentPath}; forever stop"
 ```
 
+## Another snippets
+
+### Update nodejs on server(s)
+
+~/.roco.coffee:
+
+```coffee-script
+set 'nodever', '0.8.10'
+namespace 'node', ->
+  task 'update', (done) -> sequence 'download', 'unpack', 'compile', 'install', done
+  task 'rebuild', (done) -> sequence 'unpack', 'compile', 'install', done
+  task 'download', (done) ->
+    run "cd /tmp && wget http://nodejs.org/dist/v#{roco.nodever}/node-v#{roco.nodever}.tar.gz", done
+  task 'unpack', (done) ->
+    run "cd /tmp && tar xfv node-v#{roco.nodever}.tar.gz", done
+  task 'compile', (done) ->
+    run "cd /tmp/node-v#{roco.nodever} && ./configure && make", done
+  task 'install', (done) ->
+    run "cd /tmp/node-v#{roco.nodever} && sudo make install", done
+```
+
+Example: update nodejs on `localhost` and `railwayjs.com` hosts
+
+    HOSTS=localhost,railwayjs.com roco node:update
+
 ## License
 
 MIT

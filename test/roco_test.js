@@ -1,5 +1,7 @@
-var semicov = require('semicov');
-semicov.init('lib'); process.on('exit', semicov.report);
+if (!process.env.TRAVIS) {
+    var semicov = require('semicov');
+    semicov.init('lib'); process.on('exit', semicov.report);
+}
 var rockout = require('../lib/rockout');
 var roco;
 
@@ -16,7 +18,7 @@ exports['perform non-existant task'] = function (test) {
         roco.abort = abort;
         test.done();
     };
-    rockout.perform(['test']);
+    rockout.perform('test');
 };
 
 exports['define and perform task'] = function (test) {
@@ -24,7 +26,8 @@ exports['define and perform task'] = function (test) {
     roco.task('test', function () {
         test.done();
     });
-    rockout.perform(['staging', 'ns:test']);
+    roco.env = 'staging';
+    rockout.perform('ns:test');
 };
 
 exports['run command on remote server and locally'] = function (test) {
@@ -51,7 +54,7 @@ exports['run command on remote server and locally'] = function (test) {
         });
         return proc;
     };
-    rockout.perform(['test']);
+    rockout.perform('test');
 };
 
 exports['print list of commands'] = function (test) {

@@ -9,14 +9,25 @@ var argv = optimist
 console.log(argv);
 
 var roco = require('../lib/rockout');
-roco.init();
+
+var env, command;
+if (argv._[1]) {
+    env = argv._[0];
+    command = argv._[1];
+} else if (argv._[0]) {
+    env = 'production';
+    command = argv._[0];
+} else {
+    // ???
+}
+roco.init(env);
 
 if (argv.T) {
     roco.list(argv.T);
 } else if (argv.t) {
     roco.list(argv.t, true);
 } else if (argv._.length) {
-    roco.perform(argv._);
+    roco.perform(command);
 } else {
     optimist.showHelp();
     console.log('Environment variables:\n');

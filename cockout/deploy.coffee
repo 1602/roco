@@ -28,7 +28,7 @@ ensure 'job', ->
     if roco.env == 'production'
         roco.application
     else
-        roco.application '-' + roco.env
+        roco.application + '-' + roco.env
 
 namespace 'deploy', ->
 

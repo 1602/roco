@@ -6,7 +6,7 @@ var argv = optimist
     .describe('T', 'list avaliable tasks with descriptions')
     .argv;
 
-console.log(argv);
+//console.log(argv);
 
 var roco = require('../lib/rockout');
 

@@ -2,14 +2,14 @@
   "author": "Anatoliy Chakkaev <rpm1602 at gmail dot com>",
   "name": "roco",
   "description": "Deploy app to remote server via ssh",
-  "version": "0.0.6",
+  "version": "0.0.6-1",
   "repository": {
     "type": "git",
     "url": "git@github.com:1602/roco.git"
   },
   "main": "lib/rockout.js",
   "bin": {
-      "roco": "bin/roco"
+    "roco": "bin/roco"
   },
   "scripts": {
     "test": "nodeunit test/*_test.js"

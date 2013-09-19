@@ -22,7 +22,7 @@ ensure 'releasePath',  -> path.resolve(roco.releasesPath, ''+roco.releaseName)
 ensure 'previousReleasePath', -> path.resolve(roco.releasesPath, ''+roco.previousRelease)
 ensure 'latestReleasePath', -> path.resolve(roco.releasesPath, ''+roco.latestRelease)
 ensure 'env', 'production'
-ensure 'nodeEntry', 'server.js'
+ensure 'nodeEntry', 'index.js'
 ensure 'appPort', process.env.APP_PORT || process.env.PORT || 3003
 ensure 'job', ->
     if roco.env == 'production'
@@ -63,10 +63,12 @@ namespace 'deploy', ->
                   then cd #{roco.sharedPath}/cached-copy &&
                   git fetch -q origin && git fetch --tags -q origin &&
                   git reset -q --hard #{head} && git clean -q -d -f;
+                  git submodule update --init
                 else
                   git clone -q #{roco.repository} #{roco.sharedPath}/cached-copy &&
                   cd #{roco.sharedPath}/cached-copy &&
                   git checkout -q -b deploy #{head};
+                  git submodule update --init
                 fi
                 """, ->
                     run """
@@ -146,7 +148,7 @@ namespace 'deploy', ->
               export NODE_ENV
 
               cd #{roco.currentPath}
-              /usr/local/bin/node #{roco.currentPath}/#{roco.nodeEntry}
+              /usr/local/bin/node #{roco.currentPath}/#{roco.nodeEntry} >> #{roco.currentPath}/log/#{roco.env}.log
           end script
           respawn
           """

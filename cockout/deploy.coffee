@@ -103,7 +103,7 @@ namespace 'deploy', ->
         run "sudo stop #{roco.job}", done
 
     desc """
-        Rollback current release. Removes current synlink, symlink previous,
+        Rollback current release. Removes current symlink, symlink previous,
         restart process and remove code.
     """
     task 'rollback', (done) ->

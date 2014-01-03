@@ -7,6 +7,7 @@ ensure 'repository', ->
 ensure 'hosts', ->
     abort 'Specify ssh hosts to run commands on, set "hosts", ["example.com", "git@example.com"]'
 
+ensure 'keepReleases', -> 5
 ensure 'env',          'production'
 ensure 'scm',          'git'
 ensure 'branch',       'master'
@@ -76,6 +77,13 @@ namespace 'deploy', ->
                         npm install -l;
                         cp -RPp #{roco.sharedPath}/cached-copy #{roco.releasePath}
                         """, done
+
+      task 'cleanup', (done) -> sequence 'prepare', 'removeOldReleases', done
+
+      task 'removeOldReleases', (done) ->
+        return console.log('Nothing to cleanup', done()) if roco.releases.length <= roco.keepReleases
+        console.log "Deleting #{roco.releases.length - roco.keepReleases} releases, keep latest #{roco.keepReleases} releases"
+        run "cd #{roco.releasesPath} && rm -rf #{roco.releases.slice(0, -roco.keepReleases).join(' ')}", done
 
     desc """
         Remove current symlink, symlink current release and log file

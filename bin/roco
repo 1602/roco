@@ -4,6 +4,7 @@ var argv = optimist
     .usage('Usage: roco [-tT] [env] [command]')
     .describe('t', 'list avaliable tasks')
     .describe('T', 'list avaliable tasks with descriptions')
+    .describe('v', 'print version')
     .argv;
 
 //console.log(argv);
@@ -24,6 +25,8 @@ roco.init(env);
 
 if (argv.T) {
     roco.list(argv.T);
+} else if (argv.v) {
+    console.log(require(__dirname + '/../package.json').version);
 } else if (argv.t) {
     roco.list(argv.t, true);
 } else if (argv._.length) {

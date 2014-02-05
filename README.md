@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/1602/roco.png?label=ready)](https://waffle.io/1602/roco)
 ## Roco
 
 Command line tool allows you to execute commands on remote server(s) or locally.

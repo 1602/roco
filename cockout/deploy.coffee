@@ -61,26 +61,26 @@ namespace 'deploy', ->
             head = x.split(/\s+/).shift()
             run """
                 if [ -d #{roco.sharedPath}/cached-copy ];
-                  then cd #{roco.sharedPath}/cached-copy &&
-                  git fetch -q origin && git fetch --tags -q origin &&
-                  git reset -q --hard #{head} && git clean -q -d -f;
-                  git submodule update --init
+                    then cd #{roco.sharedPath}/cached-copy &&
+                    git fetch -q origin && git fetch --tags -q origin &&
+                    git reset -q --hard #{head} && git clean -q -d -f;
+                    git submodule update --init
                 else
-                  git clone -q #{roco.repository} #{roco.sharedPath}/cached-copy &&
-                  cd #{roco.sharedPath}/cached-copy &&
-                  git checkout -q -b deploy #{head};
-                  git submodule update --init
+                    git clone -q #{roco.repository} #{roco.sharedPath}/cached-copy &&
+                    cd #{roco.sharedPath}/cached-copy &&
+                    git checkout -q -b deploy #{head};
+                    git submodule update --init
                 fi
-                """, ->
-                    run """
-                        cd #{roco.sharedPath}/cached-copy;
-                        npm install -l;
-                        cp -RPp #{roco.sharedPath}/cached-copy #{roco.releasePath}
-                        """, done
+            """, ->
+                run """
+                    cd #{roco.sharedPath}/cached-copy;
+                    npm install -l;
+                    cp -RPp #{roco.sharedPath}/cached-copy #{roco.releasePath}
+                    """, done
 
-      task 'cleanup', (done) -> sequence 'prepare', 'removeOldReleases', done
+    task 'cleanup', (done) -> sequence 'prepare', 'removeOldReleases', done
 
-      task 'removeOldReleases', (done) ->
+    task 'removeOldReleases', (done) ->
         return console.log('Nothing to cleanup', done()) if roco.releases.length <= roco.keepReleases
         console.log "Deleting #{roco.releases.length - roco.keepReleases} releases, keep latest #{roco.keepReleases} releases"
         run "cd #{roco.releasesPath} && rm -rf #{roco.releases.slice(0, -roco.keepReleases).join(' ')}", done
@@ -90,11 +90,11 @@ namespace 'deploy', ->
     """
     task 'symlink', (done) ->
         run """
-          rm -f #{roco.currentPath};
-          ln -s #{roco.releasePath} #{roco.currentPath};
-          ln -s #{roco.sharedPath}/log #{roco.currentPath}/log;
-          true
-          """, done
+            rm -f #{roco.currentPath};
+            ln -s #{roco.releasePath} #{roco.currentPath};
+            ln -s #{roco.sharedPath}/log #{roco.currentPath}/log;
+            true
+            """, done
 
     desc """
         Restart upstart job, or start if job is not running
@@ -143,28 +143,28 @@ namespace 'deploy', ->
         maybePort = "env PORT=#{roco.appPort}" if roco.appPort
 
         ups = """
-          description "#{roco.application}"
+            description "#{roco.application}"
 
-          start on startup
-          stop on shutdown
+            start on startup
+            stop on shutdown
 
-          #{maybePort}
-          #{maybeEnv}
+            #{maybePort}
+            #{maybeEnv}
 
-          script
-              export PORT
-              export NODE_ENV
+            script
+                export PORT
+                export NODE_ENV
 
-              cd #{roco.currentPath}
-              /usr/local/bin/node #{roco.currentPath}/#{roco.nodeEntry} >> #{roco.currentPath}/log/#{roco.env}.log
-          end script
-          respawn
-          """
+                cd #{roco.currentPath}
+                /usr/local/bin/node #{roco.currentPath}/#{roco.nodeEntry} >> #{roco.currentPath}/log/#{roco.env}.log
+            end script
+            respawn
+            """
 
         if roco.env == 'production'
             file = roco.application
         else
             file = "#{roco.application}-#{roco.env}"
-        
+
         run "sudo echo '#{ups}' > /tmp/upstart.tmp && sudo mv /tmp/upstart.tmp /etc/init/#{file}.conf", done
 
